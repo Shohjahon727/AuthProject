@@ -5,7 +5,7 @@
 
             <Input :label="'User Name'" :type="'text'" v-model="username"/>
             <Input :label="'Password'" :type="'password'" v-model="password"/>
-            <Button type="submit" :disabled="isLoading" @click="submitHandler">Register</Button>
+            <Button type="submit" :disabled="isDisabled" @click="submitHandler">Register</Button>
         </div>
     </div>
 </template>
@@ -22,19 +22,25 @@ export default{
     computed: {
         isLoading() {
             return this.$store.state.auth.isLoading 
+        },
+        isDisabled() {
+            return this.username === '' && this.password === ''
         }
     },
     methods: {
         submitHandler(e) {
             e.preventDefault()
-            const data = {
-                username: this.username,
-                password: this.password
+            if(!this.isDisabled) {
+                const data = {
+                    username: this.username,
+                    password: this.password
+                }
+                this.$store.dispatch('register',data).then(user => {
+                    console.log('USER',user)
+                    this.$router.push({name:'home'})
+                })
+
             }
-            this.$store.dispatch('register',data).then(user => {
-                console.log('USER',user)
-                this.$router.push({name:'home'})
-            })
         }
     }
 }
