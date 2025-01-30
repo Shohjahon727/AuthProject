@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { HomeView, RegisterView, LoginView } from '@/views'
+import { HomeView, RegisterView, LoginView ,UserData} from '@/views'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -21,6 +21,12 @@ const router = createRouter({
       component: LoginView,
       meta: {title: 'Login page'},
     },
+    {
+      path: '/userdata',
+      name: 'userdata',
+      component: UserData,
+      meta: {title: "User Data Page"},
+    }
     
   ],
 })

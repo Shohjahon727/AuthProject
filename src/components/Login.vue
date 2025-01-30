@@ -4,18 +4,13 @@
             <h1 class="fw-normal">Please Login</h1>
 
             <Input :label="'Name'" :type="'text'" v-model="username"/>
-            <!-- <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="Username">
-                <label for="floatingInput">Email</label>
-            </div> -->
             <Input :label="'Password'" :type="'password'" v-model="password"/>
-            <Button type="submit" :disabled="isDisabled" @click="submitHandler">Login</Button>
+            <Button type="submit" :disabled="isLoading" @click="submitHandler">Login</Button>
         </div>
     </div>
 </template>
 
 <script>
-import { errorMessages } from 'vue/compiler-sfc';
 import {mapState} from 'vuex'
     export default {
         data() {
@@ -29,26 +24,26 @@ import {mapState} from 'vuex'
             ...mapState({
                 isLoading: state => state.auth.isLoading,
             }),
+            // isLoading() {
+            //     return this.$store.state.auth.isLoading
+            // },
             isDisabled() {
-                return this.username === '' && this.password === ''
+                return !(this.username && this.password)
             }
         },
         methods: {
             submitHandler(e) {
                 e.preventDefault()
-                if(this.username != '' && this.password != '') {
+                if(!this.isDisabled) {
                     const data = {
                         username: this.username,
                         password: this.password
                     }
                     this.$store.dispatch('login',data).then(user => {
-                        console.log('USER',user)
                         this.$router.push({name: 'home'})
                     })
                 }
-                else {
-                    return null
-                }
+                
             }
         }
     }

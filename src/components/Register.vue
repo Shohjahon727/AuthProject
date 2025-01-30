@@ -2,16 +2,18 @@
     <div class="form-signin w-100 m-auto mt-3">
         <div class=" p-2 mx-auto w-25">
             <h1 class="fw-normal">Please Register</h1>
-
+            <!-- <ValidationError v-if="validationErrors" :validationErrors="validationErrors"/> -->
             <Input :label="'User Name'" :type="'text'" v-model="username"/>
             <Input :label="'Password'" :type="'password'" v-model="password"/>
-            <Button type="submit" :disabled="isDisabled" @click="submitHandler">Register</Button>
+            <Button type="submit" :disabled="isLoading" @click="submitHandler">Register</Button>
         </div>
     </div>
 </template>
 
 <script>
 import apiService from '@/services/AuthService';
+import ValidationError from './ValidationError.vue';
+import { mapState } from 'vuex';
 export default{
     data() {
         return {
@@ -19,12 +21,22 @@ export default{
             password: ''
         }
     },
+    components : {
+        ValidationError
+    },
     computed: {
-        isLoading() {
-            return this.$store.state.auth.isLoading 
+        ...mapState({
+                isLoading: state => state.auth.isLoading,
+
+            }),
+        // isLoading() {
+        //     return this.$store.state.auth.isLoading 
+        // },
+        validationErrors() {
+            return this.$store.state.auth.errors
         },
         isDisabled() {
-            return this.username === '' && this.password === ''
+            return !(this.username && this.password)
         }
     },
     methods: {
@@ -36,8 +48,7 @@ export default{
                     password: this.password
                 }
                 this.$store.dispatch('register',data).then(user => {
-                    console.log('USER',user)
-                    this.$router.push({name:'home'})
+                    this.$router.push({name:'login'})
                 })
 
             }
