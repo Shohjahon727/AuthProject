@@ -1,11 +1,12 @@
-import { removeItem, setItem } from "@/helpers/persistaneStorage"
+import { getItem, removeItem, setItem } from "@/helpers/persistaneStorage"
 import apiService from "@/services/AuthService"
-
+import router from "@/router/index.js"
 const state = {
     isLoading : false,
-    user: null,
+    user:  getItem("username")?? null,
     errors: null,
-    isLoggedIn: null
+    isLoggedIn: getItem("token")? true : false,
+
 }
 
 const mutations = {
@@ -29,12 +30,13 @@ const mutations = {
         state.isLoading = true
         state.user = null
         state.errors = null
-        state.isLoggedIn = null
+        state.isLoggedIn = false
     },
-    loginSuccess(state,payload) {
-        state.isLoading = false
-        state.user = payload
-        state.isLoggedIn = true
+    loginSuccess(state, payload) {
+        state.isLoading = false;
+        state.user = payload;
+        state.isLoggedIn = true;
+        setItem("username", payload.username); 
     },
     loginFailure(state,payload) {
         state.isLoading = false
@@ -43,8 +45,8 @@ const mutations = {
     },
     logout(state) {
         state.user = null
-        state.isLoggedIn =null
-    }
+        state.isLoggedIn =false
+    },
 }
 
 const actions = {
@@ -70,7 +72,8 @@ const actions = {
             try {
                 let response = await apiService.login(user);
                 context.commit('loginSuccess', response.data);
-                
+                setItem("token",response.data.refreshToken);
+                setItem("username",response.data.user);
                 resolve(response.data);
             } catch (error) {
                 context.commit('loginFailure', error);
@@ -82,11 +85,12 @@ const actions = {
         context.commit('logout')
         removeItem('token')
         removeItem('username')
+        router.push({name:'login'})
     }
 }
 
 export default {
     state,
     mutations,
-    actions
+    actions,
 }
