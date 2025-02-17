@@ -6,9 +6,9 @@
         </a>
         <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
           <template v-if="isLoggedIn">
-          <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#" @click="logout">Logout</a>
-          <RouterLink :to="{name:'userdata'}" class="me-3 py-2 link-body-emphasis text-decoration-none">User Account</RouterLink>
-          
+            <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#" @click="logout">Logout</a>
+            <RouterLink v-if="role == 'User'" :to="{name:'userdata'}" class="me-3 py-2 link-body-emphasis text-decoration-none">User Account</RouterLink>
+            <RouterLink v-if="role == 'Admin'" :to="{name:'admin'}" class="me-3 py-2 link-body-emphasis text-decoration-none">Admin</RouterLink>
           </template>
           <template v-if="!isLoggedIn">
             <RouterLink :to="{name:'register'}" class="me-3 py-2 link-body-emphasis text-decoration-none">Register</RouterLink>
@@ -22,6 +22,7 @@
 import { RouterLink } from 'vue-router';
 import { mapState } from 'vuex';
 import { logo } from '@/assets';
+import { getItem } from '@/helpers/persistaneStorage';
 export default{
     data() {
         return {
@@ -31,8 +32,12 @@ export default{
     computed: {
       ...mapState({
         user: state => state.auth.user,
-        isLoggedIn: state => state.auth.isLoggedIn
-      })
+        isLoggedIn: state => state.auth.isLoggedIn,
+        role: state => state.auth.role
+      }),
+      userRole() {
+        return localStorage.getItem("role");
+      }
     },
     methods:{
       toHomeHandler(){

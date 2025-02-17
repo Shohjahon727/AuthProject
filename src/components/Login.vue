@@ -1,12 +1,13 @@
 <template>
      <div class="form-signin w-100 m-auto mt-3">
-        <div class=" p-2 mx-auto w-25">
+        <form class=" p-2 mx-auto w-25">
             <h1 class="fw-normal">Please Login</h1>
 
+            <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
             <Input :label="'Name'" :type="'text'" v-model="username"/>
             <Input :label="'Password'" :type="'password'" v-model="password"/>
             <Button type="submit" :disabled="isLoading" @click="submitHandler">Login</Button>
-        </div>
+        </form>
     </div>
 </template>
 
@@ -16,7 +17,8 @@ import {mapState} from 'vuex'
         data() {
             return {
                 username: '',
-                password: ''
+                password: '',
+                errorMessage: ''
             }
         },
 
@@ -24,25 +26,36 @@ import {mapState} from 'vuex'
             ...mapState({
                 isLoading: state => state.auth.isLoading,
             }),
-            // isLoading() {
-            //     return this.$store.state.auth.isLoading
-            // },
+            isLoading() {
+                return this.$store.state.auth.isLoading
+            },
             isDisabled() {
                 return !(this.username && this.password)
             }
         },
         methods: {
-            submitHandler(e) {
+            async submitHandler(e) {
                 e.preventDefault()
-                if(!this.isDisabled) {
+                    this.errorMessage = '';
+                    if(!this.username) {
+                        this.errorMessage = 'Username is required field'
+                        return
+                    }
+                    if(!this.password) {
+                        this.errorMessage = 'Password is required field'
+                        return
+                    }
+                        
                     const data = {
                         username: this.username,
                         password: this.password
                     }
                     this.$store.dispatch('login',data).then(user => {
-                        this.$router.push({name: 'home'})
+                        this.$router.push({name:'home'})
                     })
-                }
+                    .catch(error => {
+                        this.errorMessage = error.response.data 
+                    })
                 
             }
         }

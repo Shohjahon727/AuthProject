@@ -14,13 +14,11 @@ import { errorMessages } from 'vue/compiler-sfc';
                 required: true
             },
         },
-        updated() {
-            console.log(this.validationErrors)
-        },
+        
         computed: {
-            errorMessages() {
-                return null
-            }
+            errorMessages(){
+                return ['username is required field','password is required field']
+        }
         }
     }
 </script>

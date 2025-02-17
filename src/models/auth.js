@@ -6,7 +6,8 @@ const state = {
     user:  getItem("username")?? null,
     errors: null,
     isLoggedIn: getItem("token")? true : false,
-
+    role: getItem("role") ?? null,
+    token: getItem("token") ?? null,
 }
 
 const mutations = {
@@ -14,29 +15,36 @@ const mutations = {
         state.isLoading = true
         state.user = null
         state.errors = null
-        // state.isLoggedIn = null
+        state.token = null
     },
     registerSuccess(state,payload) {
         state.isLoading = false
         state.user = payload
-        // state.isLoggedIn = true
+        state.role = payload
+        state.token = payload.refreshToken
     },
     registerFailure(state,payload) {
         state.isLoading = false
         state.errors = payload
-        // state.isLoggedIn = false
     },
     loginStart(state) {
         state.isLoading = true
         state.user = null
         state.errors = null
         state.isLoggedIn = false
+        state.role = null
+        state.token = null
     },
     loginSuccess(state, payload) {
         state.isLoading = false;
-        state.user = payload;
+        state.user = payload.username;
         state.isLoggedIn = true;
-        setItem("username", payload.username); 
+        state.role = payload.role;
+        state.token = payload.refreshToken
+
+        setItem("username", payload.username)
+        setItem("token", payload.refreshToken)
+        setItem("role", payload.role) // Roleni saqlash
     },
     loginFailure(state,payload) {
         state.isLoading = false
@@ -45,6 +53,8 @@ const mutations = {
     },
     logout(state) {
         state.user = null
+        state.token = null
+        state.role = null
         state.isLoggedIn =false
     },
 }
@@ -73,7 +83,8 @@ const actions = {
                 let response = await apiService.login(user);
                 context.commit('loginSuccess', response.data);
                 setItem("token",response.data.refreshToken);
-                setItem("username",response.data.user);
+                setItem("username",response.data.username);
+                setItem('role', response.data.role);
                 resolve(response.data);
             } catch (error) {
                 context.commit('loginFailure', error);
@@ -85,7 +96,8 @@ const actions = {
         context.commit('logout')
         removeItem('token')
         removeItem('username')
-        router.push({name:'login'})
+        removeItem('role')
+        await router.push({name:'login'})
     }
 }
 
