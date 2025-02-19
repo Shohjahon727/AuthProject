@@ -1,6 +1,7 @@
 <template>
     <div class="text-center">
         <h1>Welcome to my project</h1>
+        
     </div>
 </template>
 <style>

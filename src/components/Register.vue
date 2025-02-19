@@ -46,6 +46,7 @@ export default{
 
             // if(!this.isDisabled) {
             this.errorMessage = '';
+            
             if(!this.username) {
                 this.errorMessage = 'Username is required field'
                 return;
@@ -55,11 +56,8 @@ export default{
                 this.errorMessage = 'Password is required field'
                 return;
             }
-            // if (this.password.length < 8) {
-            //     this.errorMessage = 'Password must be at least 8 characters long';
-            //     return;
-            // }
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/; //(?=.*[@$!%*?&])
             if (!passwordRegex.test(this.password)) {
                 this.errorMessage = 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character';
                 return;

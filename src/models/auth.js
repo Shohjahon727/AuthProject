@@ -57,6 +57,12 @@ const mutations = {
         state.role = null
         state.isLoggedIn =false
     },
+    setAuthErrors(state, errors) {
+        state.errors = errors
+    },
+    clearAuthErrors(state) {
+        state.errors = {}
+    }
 }
 
 const actions = {
